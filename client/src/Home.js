@@ -1,34 +1,27 @@
 import React, { Component } from "react";
-import { API } from "./config/api";
+import { connect } from "react-redux";
+import { actionINC, actionDEC } from "./_actions/counter";
 
 class Home extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      loading: false,
-      data: []
-    };
-  }
+  handlePress = action => {
+    const { number } = this.props.counter;
 
-  componentDidMount() {
-    this.setState({ loading: true });
-    API.get(`/accounts`)
-      .then(res => {
-        this.setState({ loading: false, data: res.data });
-      })
-      .catch(err => {});
-  }
+    if (action === "INC") this.props.dispatch(actionINC(number));
+    else this.props.dispatch(actionDEC(number));
+  };
 
   render() {
-    const { loading, data } = this.state;
+    // const { number } = this.props.counter;
+    const { data, isLoading } = this.props.users;
 
-    if (loading) {
+    if (isLoading) {
       return (
         <div>
-          <h1>Please wait, Now Loading...</h1>
+          <h1>Loading, please wait!</h1>
         </div>
       );
     }
+
     return (
       <div
         style={{
@@ -38,18 +31,22 @@ class Home extends Component {
           alignItems: "center"
         }}
       >
-        <h1>{this.props.children}</h1>
-        {data.map(entry => {
-          return (
-            <div key={entry.id}>
-              <p>username: {entry.username}</p>
-              <p>email: {entry.email}</p>
-            </div>
-          );
+        {/* <h1>{number}</h1>
+        <button onClick={() => this.handlePress("INC")}>BUTTON INC</button>
+        <button onClick={() => this.handlePress("DEC")}>BUTTON DEC</button> */}
+        {data.map((entry, index) => {
+          return <p key={index}>{entry.name}</p>;
         })}
       </div>
     );
   }
 }
 
-export default Home;
+const mapStateToProps = state => {
+  return {
+    counter: state.counter,
+    users: state.users
+  };
+};
+
+export default connect(mapStateToProps)(Home);
