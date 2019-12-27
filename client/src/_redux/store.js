@@ -3,16 +3,19 @@ import { createStore, combineReducers, applyMiddleware } from "redux";
 import { counter } from "../_reducers/counter";
 import { users } from "../_reducers/users";
 
-import { promise, logger } from "../middleware";
+import { categories } from "../_reducers/categories";
+
+import { promise, logger } from "./middleware";
 
 //Get All reducers available
 //Global State come from here
-const reducers = combineReducers({
+const rootReducers = combineReducers({
   counter,
-  users
+  users,
+  categories
 });
 
 //Setup Store Redux
-const store = createStore(reducers, applyMiddleware(promise, logger));
+const store = createStore(rootReducers, applyMiddleware(promise, logger));
 
 export default store;

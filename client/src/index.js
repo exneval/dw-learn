@@ -5,6 +5,7 @@ import App from "./App";
 // import NewApp from "./NewApp";
 import * as serviceWorker from "./serviceWorker";
 
+// NEED FOR REDUX
 import { Provider } from "react-redux";
 import store from "./_redux/store";
 
