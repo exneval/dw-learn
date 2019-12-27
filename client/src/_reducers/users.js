@@ -1,61 +1,73 @@
-import {
-  GET_USERS,
-  GET_USERS_PENDING,
-  POST_USERS,
-  POST_USERS_PENDING,
-  UPDATE_USERS,
-  UPDATE_USERS_PENDING
-} from "../config/constants";
+import { GET_USERS, POST_USER, UPDATE_USER } from "../config/constants";
 
 const initialState = {
   data: [],
   isLoading: false,
-  isPost: false
+  isPost: false,
+  error: false
 };
 
 export const users = (state = initialState, action) => {
   switch (action.type) {
-    case GET_USERS:
-      return {
-        ...state,
-        data: action.payload,
-        isLoading: false,
-        isPost: false
-      };
-    case GET_USERS_PENDING:
+    case `${GET_USERS}_PENDING`:
       return {
         ...state,
         isLoading: true
       };
-    case POST_USERS:
+    case `${GET_USERS}_FULFILLED`:
       return {
         ...state,
-        data: state.data.concat(action.payload),
+        data: action.payload.data,
         isLoading: false,
         isPost: false
       };
-    case POST_USERS_PENDING:
+    case `${GET_USERS}_REJECTED`:
+      return {
+        ...state,
+        error: true,
+        isLoading: false
+      };
+    case `${POST_USER}_PENDING`:
       return {
         ...state,
         isLoading: true,
         isPost: true
       };
-    case UPDATE_USERS:
+    case `${POST_USER}_FULFILLED`:
+      return {
+        ...state,
+        data: state.data.concat(action.payload.data),
+        isLoading: false,
+        isPost: false
+      };
+    case `${POST_USER}_REJECTED`:
+      return {
+        ...state,
+        error: true,
+        isLoading: false
+      };
+    case `${UPDATE_USER}_PENDING`:
+      return {
+        ...state,
+        isLoading: true,
+        isPost: true
+      };
+    case `${UPDATE_USER}_FULFILLED`:
       return {
         ...state,
         data: [
-          ...state.data.slice(0, action.payload.index - 1),
-          ...[action.payload.user],
-          ...state.data.slice(action.payload.index - 1)
+          ...state.data.slice(0, action.payload.config.params.index - 1),
+          ...[action.payload.data],
+          ...state.data.slice(action.payload.config.params.index)
         ],
         isLoading: false,
         isPost: false
       };
-    case UPDATE_USERS_PENDING:
+    case `${UPDATE_USER}_REJECTED`:
       return {
         ...state,
-        isLoading: true,
-        isPost: true
+        error: true,
+        isLoading: false
       };
     default:
       return state;

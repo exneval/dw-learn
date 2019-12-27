@@ -1,15 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 
-import {
-  getUsers,
-  getUsersPending,
-  addUser,
-  addUserPending,
-  updateUser,
-  updateUserPending
-} from "../_actions/users";
-import axios from "axios";
+import { getUsers, addUser, updateUser } from "../_actions/users";
 
 class About extends Component {
   constructor(props) {
@@ -22,10 +14,7 @@ class About extends Component {
   }
 
   componentDidMount() {
-    this.props.dispatch(getUsersPending()); //Fire ACT Pending
-    axios.get("https://jsonplaceholder.typicode.com/users").then(res => {
-      this.props.dispatch(getUsers(res.data)); //Fire ACT FULLFILED
-    });
+    this.props.getUsers();
   }
 
   handleChange = (type, value) => {
@@ -35,30 +24,22 @@ class About extends Component {
   };
 
   handleAddUser = () => {
-    this.props.dispatch(addUserPending()); //Fire ACT Pending
-    axios
-      .post("https://jsonplaceholder.typicode.com/users", {
-        name: this.state.fullname,
-        username: this.state.username
-      })
-      .then(res => {
-        this.props.dispatch(addUser(res.data)); //Fire ACT FULLFILED
-      });
+    const user = {
+      name: this.state.fullname,
+      username: this.state.username
+    };
+    this.props.addUser(user);
   };
 
   handleUpdateUser = () => {
-    this.props.dispatch(updateUserPending()); //Fire ACT Pending
-    axios
-      .put(`https://jsonplaceholder.typicode.com/users/${this.state.index}`, {
-        name: this.state.fullname
-      })
-      .then(res => {
-        this.props.dispatch(updateUser(res.data, this.state.index)); //Fire ACT FULLFILED
-      });
+    const user = {
+      name: this.state.fullname
+    };
+    this.props.updateUser(user, this.state.index);
   };
 
   render() {
-    const { data, isLoading, isPost } = this.props.users;
+    const { data, isLoading, isPost, error } = this.props.users;
     // const { number } = this.props.counter;
 
     if (isLoading && !isPost) {
@@ -69,8 +50,16 @@ class About extends Component {
       );
     }
 
+    if (error) {
+      return (
+        <div>
+          <h1>There's an unknown error occured</h1>
+        </div>
+      );
+    }
+
     return (
-      <div>
+      <div style={{ display: "flex", flexDirection: "column" }}>
         <label>
           Fullname:{" "}
           <input
@@ -92,8 +81,12 @@ class About extends Component {
             onChange={evt => this.handleChange("index", evt.target.value)}
           />
         </label>
-        <button onClick={this.handleAddUser}>Add User</button>
-        <button onClick={this.handleUpdateUser}>Update User</button>
+        <button onClick={this.handleAddUser} style={{ width: 200 }}>
+          Add User
+        </button>
+        <button onClick={this.handleUpdateUser} style={{ width: 200 }}>
+          Update User
+        </button>
         {/* <h1>{number}</h1> */}
         {data.map((entry, index) => {
           return <p key={index}>{entry.name}</p>;
@@ -110,4 +103,12 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps)(About);
+const mapDispatchToProps = dispatch => {
+  return {
+    getUsers: () => dispatch(getUsers()),
+    addUser: user => dispatch(addUser(user)),
+    updateUser: (user, index) => dispatch(updateUser(user, index))
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(About);

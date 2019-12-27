@@ -1,50 +1,37 @@
-import {
-  GET_USERS,
-  GET_USERS_PENDING,
-  POST_USERS,
-  POST_USERS_PENDING,
-  UPDATE_USERS,
-  UPDATE_USERS_PENDING
-} from "../config/constants";
+import { GET_USERS, POST_USER, UPDATE_USER } from "../config/constants";
+import axios from "axios";
 
-export const getUsers = users => {
+export const getUsers = () => {
   return {
     type: GET_USERS,
-    payload: users
-  };
-};
-
-export const getUsersPending = () => {
-  return {
-    type: GET_USERS_PENDING
+    payload: axios({
+      method: "GET",
+      url: "https://jsonplaceholder.typicode.com/users"
+    })
   };
 };
 
 export const addUser = user => {
   return {
-    type: POST_USERS,
-    payload: user
-  };
-};
-
-export const addUserPending = () => {
-  return {
-    type: POST_USERS_PENDING
+    type: POST_USER,
+    payload: axios({
+      method: "POST",
+      url: "https://jsonplaceholder.typicode.com/users",
+      data: user
+    })
   };
 };
 
 export const updateUser = (user, index) => {
   return {
-    type: UPDATE_USERS,
-    payload: {
-      user,
-      index
-    }
-  };
-};
-
-export const updateUserPending = () => {
-  return {
-    type: UPDATE_USERS_PENDING
+    type: UPDATE_USER,
+    payload: axios({
+      method: "PUT",
+      url: `https://jsonplaceholder.typicode.com/users/${index}`,
+      params: {
+        index
+      },
+      data: user
+    })
   };
 };
